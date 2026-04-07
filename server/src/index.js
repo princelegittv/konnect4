@@ -9,14 +9,24 @@ import { registerPlatformRoutes } from "./platformRoutes.js";
 import { configureRealtimeHub } from "./realtimeHub.js";
 import { registerGameHandlers } from "./socketHandlers.js";
 
+const allowedOrigins = [
+  CLIENT_URL,
+  "https://konnect4-client.vercel.app",
+].filter(Boolean);
+
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
   cors: {
-    origin: [
-      CLIENT_URL,
-      "https://konnect4-client.vercel.app"
-    ],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`Origin ${origin} not allowed by Socket.IO CORS`));
+    },
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -24,21 +34,28 @@ const io = new Server(server, {
 
 app.use(
   cors({
-    origin: [
-      CLIENT_URL,
-      "https://konnect4-client.vercel.app"
-    ],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`Origin ${origin} not allowed by Express CORS`));
+    },
     credentials: true,
   }),
 );
+
 app.use(express.json());
 
 configureRealtimeHub(io);
 registerAuthRoutes(app);
 registerPlatformRoutes(app);
-app.get("/", (req, res) => {
+
+app.get("/", (_req, res) => {
   res.send("Konnect4 backend is live");
 });
+
 app.get("/health", (_request, response) => {
   response.json({ ok: true });
 });
