@@ -123,6 +123,23 @@ export default function App() {
       socket.disconnect();
     }
     socket.connect();
+
+socket.on("connect", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!user) return;
+
+  socket.emit(
+    "auth:identify",
+    {
+      userId: user.id,
+      username: user.username,
+    },
+    (response) => {
+      console.log("Auth identify:", response);
+    }
+  );
+});
   }
 
   function disconnectSocket() {

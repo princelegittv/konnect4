@@ -43,6 +43,13 @@ function refreshRealtimeStateForUser(userId) {
   emitPresenceRefreshToFriends(userId);
 }
 
+function attachAuthenticatedSocket(socket, user) {
+  socket.data.user = user;
+  attachUserSocket(user.id, socket.id);
+  updateUserOnlineStatus(user.id, "online");
+  refreshRealtimeStateForUser(user.id);
+}
+
 export function registerGameHandlers(io) {
   configureRealtimeHub(io);
 
@@ -63,7 +70,27 @@ export function registerGameHandlers(io) {
     socket.emit("live:matches:update", {
       matches: listLiveMatches(),
     });
+socket.on("auth:identify", ({ userId, username } = {}, callback) => {
+  if (!userId) {
+    callback?.({
+      ok: false,
+      error: "Missing user identity.",
+    });
+    return;
+  }
 
+  const user = {
+    id: userId,
+    username: username ?? "Player",
+  };
+
+  attachAuthenticatedSocket(socket, user);
+
+  callback?.({
+    ok: true,
+    user,
+  });
+});
     socket.on("room:create", (_payload = {}, callback) => {
       if (!requireUser(socket, callback)) {
         return;
