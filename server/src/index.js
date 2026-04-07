@@ -30,7 +30,9 @@ app.use(express.json());
 configureRealtimeHub(io);
 registerAuthRoutes(app);
 registerPlatformRoutes(app);
-
+app.get("/", (req, res) => {
+  res.send("Konnect4 backend is live");
+});
 app.get("/health", (_request, response) => {
   response.json({ ok: true });
 });
