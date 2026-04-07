@@ -1,0 +1,39 @@
+.u-surface-card {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(12, 18, 31, 0.94)),
+    #111827;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+}
+
+.u-gold-glow {
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.2);
+}
+
+.u-text-muted {
+  color: #9ca3af;
+}
+
+.u-stack-md {
+  display: grid;
+  gap: 16px;
+}
+
+.u-responsive-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.u-identity-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 960px) {
+  .u-responsive-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
