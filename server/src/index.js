@@ -24,7 +24,10 @@ const io = new Server(server, {
 
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: [
+      CLIENT_URL,
+      "https://konnect4-client.vercel.app"
+    ],
     credentials: true,
   }),
 );
