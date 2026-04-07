@@ -47,8 +47,8 @@ export function createSessionCookie(token) {
     maxAge: Math.floor(SESSION_TTL_MS / 1000),
     path: "/",
     httpOnly: true,
-    sameSite: "Lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: "None",
+    secure: true,
   });
 }
 
@@ -57,7 +57,7 @@ export function clearSessionCookie() {
     maxAge: 0,
     path: "/",
     httpOnly: true,
-    sameSite: "Lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: "None",
+    secure: true,
   });
 }
