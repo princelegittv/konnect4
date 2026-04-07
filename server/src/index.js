@@ -13,7 +13,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: CLIENT_URL,
+    origin: [
+      CLIENT_URL,
+      "https://konnect4-client.vercel.app"
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
