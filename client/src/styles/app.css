@@ -831,6 +831,63 @@ img {
   font-size: 1.9rem;
 }
 
+.picker-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.avatar-select-field {
+  display: grid;
+  gap: 8px;
+  min-width: min(100%, 220px);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.avatar-select-field select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.avatar-select-field select:focus {
+  border-color: rgba(250, 204, 21, 0.45);
+  box-shadow: var(--gold-glow);
+}
+
+.avatar-current-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.avatar-current-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(250, 204, 21, 0.08);
+  font-size: 1.5rem;
+  box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.12);
+}
+
 .avatar-option-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
@@ -849,6 +906,18 @@ img {
   border-color: rgba(250, 204, 21, 0.4);
   background: rgba(250, 204, 21, 0.12);
   box-shadow: var(--gold-glow);
+}
+
+.avatar-flag-option {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+}
+
+.avatar-option-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
 }
 
 .upload-tile {
