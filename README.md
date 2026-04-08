@@ -105,7 +105,7 @@ git push -u origin main
 5. Set environment variables:
 
    - `NODE_ENV=production`
-   - `NODE_VERSION=22.12.0`
+   - `NODE_VERSION=22.22.0`
    - `CLIENT_URL=https://your-frontend-domain.vercel.app`
 
 6. Deploy the service.
