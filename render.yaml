@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: starter
     region: ohio
-    buildCommand: npm ci
+    buildCommand: npm install
     startCommand: npm run start --workspace server
     healthCheckPath: /health
     autoDeployTrigger: commit
