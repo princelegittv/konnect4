@@ -379,16 +379,16 @@ img {
 .room-hero {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
   align-items: center;
-  padding: 22px 24px;
+  padding: 18px 20px;
 }
 
 .profile-bar-main,
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   min-width: 0;
 }
 
@@ -401,11 +401,59 @@ img {
   align-items: center;
 }
 
+.compact-profile-main {
+  flex: 1 1 auto;
+}
+
+.profile-bar-copy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.profile-bar-title-row,
+.profile-bar-identity,
+.profile-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-bar-identity h2,
+.hero-copy h1 {
+  margin: 0;
+}
+
+.profile-email {
+  margin: 0;
+}
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .profile-actions,
 .room-hero-meta {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   justify-items: end;
+}
+
+.compact-profile-actions {
+  flex-shrink: 0;
+}
+
+.logout-button {
+  width: 100%;
 }
 
 .notification-center {
@@ -669,9 +717,22 @@ img {
   padding: 18px 22px;
 }
 
-.home-hero > div:first-child {
+.hero-copy {
   display: grid;
-  gap: 10px;
+  gap: 8px;
+  max-width: 640px;
+}
+
+.hero-copy .hero-text {
+  max-width: 58ch;
+}
+
+.status-inline-banner {
+  min-width: min(100%, 280px);
+}
+
+.status-inline-banner p {
+  margin-top: 6px;
 }
 
 .home-main {
@@ -1634,6 +1695,10 @@ img {
     align-items: flex-start;
   }
 
+  .profile-action-row {
+    width: 100%;
+  }
+
   .profile-actions,
   .room-hero-meta {
     justify-items: start;
@@ -1694,6 +1759,11 @@ img {
     border-radius: 20px;
   }
 
+  .profile-bar-identity,
+  .profile-bar-title-row {
+    align-items: flex-start;
+  }
+
   .mobile-nav-sheet {
     top: 8px;
     right: 8px;
@@ -1737,6 +1807,11 @@ img {
   .inline-form,
   .list-card,
   .player-chip {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-action-row {
     flex-direction: column;
     align-items: stretch;
   }

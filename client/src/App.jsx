@@ -35,6 +35,16 @@ const defaultRankedQueueState = {
   queueSize: 0,
 };
 
+const menuLabels = {
+  play: "Play",
+  ranked: "Ranked",
+  practice: "Practice",
+  live: "Live Matches",
+  friends: "Friends",
+  leaderboards: "Leaderboards",
+  account: "Profile",
+};
+
 export default function App() {
   const [sessionStatus, setSessionStatus] = useState("loading");
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
@@ -745,6 +755,7 @@ export default function App() {
         user={user}
         notifications={notifications}
         isConnected={isConnected}
+        currentSectionLabel={menuLabels[selectedMenu] ?? "Play"}
         onOpenNotifications={handleOpenNotifications}
         onMarkNotificationRead={handleMarkNotificationRead}
         onLogout={handleLogout}
@@ -752,7 +763,7 @@ export default function App() {
       />
 
       <section className="home-hero">
-        <div>
+        <div className="hero-copy">
           <p className="eyebrow">Konnect4 Platform</p>
           <h1>Play Konnect4 your way</h1>
           <p className="hero-text">
@@ -761,8 +772,8 @@ export default function App() {
           </p>
         </div>
 
-        <div className="status-banner compact-banner">
-          <strong>Platform status</strong>
+        <div className="status-banner compact-banner status-inline-banner">
+          <strong>{isConnected ? "Realtime ready" : "Connection status"}</strong>
           <p>{feedback.message}</p>
         </div>
       </section>
