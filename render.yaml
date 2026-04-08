@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: konnect4-backend
+    runtime: node
+    plan: starter
+    region: ohio
+    buildCommand: npm ci
+    startCommand: npm run start --workspace server
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: CLIENT_URL
+        sync: false

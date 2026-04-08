@@ -1,5 +1,17 @@
 import { SESSION_COOKIE_NAME, SESSION_TTL_MS } from "../config.js";
 
+function getSessionCookieOptions() {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  return {
+    maxAge: Math.floor(SESSION_TTL_MS / 1000),
+    path: "/",
+    httpOnly: true,
+    sameSite: "Lax",
+    secure: isProduction,
+  };
+}
+
 function serializeCookie(name, value, options = {}) {
   const parts = [`${name}=${value}`];
 
@@ -43,21 +55,12 @@ export function getSessionTokenFromCookieHeader(cookieHeader = "") {
 }
 
 export function createSessionCookie(token) {
-  return serializeCookie(SESSION_COOKIE_NAME, token, {
-    maxAge: Math.floor(SESSION_TTL_MS / 1000),
-    path: "/",
-    httpOnly: true,
-    sameSite: "None",
-    secure: true,
-  });
+  return serializeCookie(SESSION_COOKIE_NAME, token, getSessionCookieOptions());
 }
 
 export function clearSessionCookie() {
   return serializeCookie(SESSION_COOKIE_NAME, "", {
+    ...getSessionCookieOptions(),
     maxAge: 0,
-    path: "/",
-    httpOnly: true,
-    sameSite: "None",
-    secure: true,
   });
 }

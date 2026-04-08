@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import AuthPanel from "./components/auth/AuthPanel";
+import CookieConsentBanner from "./components/CookieConsentBanner";
 import LobbyForm from "./components/LobbyForm";
 import RoomScreen from "./components/RoomScreen";
 import FriendsSection from "./components/friends/FriendsSection";
@@ -35,6 +36,8 @@ const defaultRankedQueueState = {
 
 export default function App() {
   const [sessionStatus, setSessionStatus] = useState("loading");
+  const [cookiesAccepted, setCookiesAccepted] = useState(false);
+  const [cookiePreferenceResolved, setCookiePreferenceResolved] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
   const [user, setUser] = useState(null);
   const [profileData, setProfileData] = useState(null);
@@ -111,6 +114,39 @@ export default function App() {
     return profileResult.value;
   }
 
+  async function ensureRealtimeConnection(timeoutMs = 5000) {
+    if (socket.connected) {
+      return true;
+    }
+
+    return new Promise((resolve) => {
+      const timeoutId = window.setTimeout(() => {
+        cleanup();
+        resolve(false);
+      }, timeoutMs);
+
+      function cleanup() {
+        window.clearTimeout(timeoutId);
+        socket.off("connect", handleConnect);
+        socket.off("connect_error", handleConnectError);
+      }
+
+      function handleConnect() {
+        cleanup();
+        resolve(true);
+      }
+
+      function handleConnectError() {
+        cleanup();
+        resolve(false);
+      }
+
+      socket.on("connect", handleConnect);
+      socket.on("connect_error", handleConnectError);
+      socket.connect();
+    });
+  }
+
   function resetHomeState() {
     setRoom(null);
     setRandomQueueState(defaultRandomQueueState);
@@ -123,23 +159,6 @@ export default function App() {
       socket.disconnect();
     }
     socket.connect();
-
-socket.on("connect", () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  if (!user) return;
-
-  socket.emit(
-    "auth:identify",
-    {
-      userId: user.id,
-      username: user.username,
-    },
-    (response) => {
-      console.log("Auth identify:", response);
-    }
-  );
-});
   }
 
   function disconnectSocket() {
@@ -151,11 +170,12 @@ socket.on("connect", () => {
   }
 
   function emitWithAck(eventName, payload = {}) {
-    return new Promise((resolve) => {
-      if (!socket.connected) {
+    return new Promise(async (resolve) => {
+      const connected = await ensureRealtimeConnection();
+      if (!connected) {
         resolve({
           ok: false,
-          error: "Realtime connection is unavailable.",
+          error: "Realtime connection is unavailable. Please confirm cookies are accepted and try again.",
         });
         return;
       }
@@ -188,6 +208,25 @@ socket.on("connect", () => {
   }
 
   useEffect(() => {
+    const storedConsent = window.localStorage.getItem("konnect4_cookie_consent");
+    setCookiesAccepted(storedConsent === "accepted");
+    setCookiePreferenceResolved(true);
+  }, []);
+
+  useEffect(() => {
+    if (!cookiePreferenceResolved) {
+      return undefined;
+    }
+
+    if (!cookiesAccepted) {
+      setSessionStatus("guest");
+      setFeedback({
+        type: "info",
+        message: "Accept essential cookies to sign in, queue up, and play Konnect4 online.",
+      });
+      return undefined;
+    }
+
     let cancelled = false;
 
     async function loadSession() {
@@ -232,7 +271,7 @@ socket.on("connect", () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [cookiePreferenceResolved, cookiesAccepted]);
 
   useEffect(() => {
     function handleConnect() {
@@ -249,6 +288,17 @@ socket.on("connect", () => {
         setFeedback({
           type: "error",
           message: "Realtime connection dropped. Trying to reconnect...",
+        });
+      }
+    }
+
+    function handleConnectError() {
+      setIsConnected(false);
+
+      if (sessionStatus === "authenticated") {
+        setFeedback({
+          type: "error",
+          message: "Realtime connection failed. Check your internet connection and cookie permissions, then try again.",
         });
       }
     }
@@ -281,12 +331,14 @@ socket.on("connect", () => {
     }
 
     socket.on("connect", handleConnect);
+    socket.on("connect_error", handleConnectError);
     socket.on("disconnect", handleDisconnect);
     socket.on("room:state", handleRoomState);
     socket.on("notifications:update", handleNotificationsUpdate);
 
     return () => {
       socket.off("connect", handleConnect);
+      socket.off("connect_error", handleConnectError);
       socket.off("disconnect", handleDisconnect);
       socket.off("room:state", handleRoomState);
       socket.off("notifications:update", handleNotificationsUpdate);
@@ -307,6 +359,14 @@ socket.on("connect", () => {
   const canRequestRematch = Boolean(room?.status === "finished" && !isSpectator);
 
   async function handleAuthSubmit(payload) {
+    if (!cookiesAccepted) {
+      setFeedback({
+        type: "error",
+        message: "Accept essential cookies before creating an account or logging in.",
+      });
+      return;
+    }
+
     setIsAuthSubmitting(true);
 
     try {
@@ -571,6 +631,15 @@ socket.on("connect", () => {
     }
   }
 
+  function handleAcceptCookies() {
+    window.localStorage.setItem("konnect4_cookie_consent", "accepted");
+    setCookiesAccepted(true);
+    setFeedback({
+      type: "success",
+      message: "Cookies accepted. You can now sign in and play online.",
+    });
+  }
+
   async function handleOpenNotifications() {
     if (!notifications.some((notification) => !notification.readAt)) {
       return;
@@ -610,13 +679,15 @@ socket.on("connect", () => {
     }
   }
 
-  if (sessionStatus === "loading") {
+  if (sessionStatus === "loading" || !cookiePreferenceResolved) {
     return (
       <main className="app-shell">
         <section className="loading-card">
           <strong>Loading Konnect4...</strong>
           <p>Restoring your session and preparing the platform.</p>
         </section>
+
+        {!cookiesAccepted ? <CookieConsentBanner onAccept={handleAcceptCookies} /> : null}
       </main>
     );
   }
@@ -631,6 +702,8 @@ socket.on("connect", () => {
           isSubmitting={isAuthSubmitting}
           feedback={feedback}
         />
+
+        {!cookiesAccepted ? <CookieConsentBanner onAccept={handleAcceptCookies} /> : null}
       </main>
     );
   }
@@ -651,6 +724,8 @@ socket.on("connect", () => {
           onSetTimer={handleSetTurnTimer}
           onLeaveRoom={handleLeaveRoom}
         />
+
+        {!cookiesAccepted ? <CookieConsentBanner onAccept={handleAcceptCookies} /> : null}
       </main>
     );
   }
@@ -774,6 +849,8 @@ socket.on("connect", () => {
           </div>
         ) : null}
       </section>
+
+      {!cookiesAccepted ? <CookieConsentBanner onAccept={handleAcceptCookies} /> : null}
     </main>
   );
 }
