@@ -8,14 +8,26 @@ function sendError(response, error) {
   });
 }
 
+function getRequestSessionToken(request) {
+  const cookieToken = getSessionTokenFromCookieHeader(request.headers.cookie);
+  if (cookieToken) {
+    return cookieToken;
+  }
+
+  const authHeader = String(request.headers.authorization ?? "").trim();
+  const [scheme, bearerToken] = authHeader.split(/\s+/, 2);
+  return scheme?.toLowerCase() === "bearer" && bearerToken ? bearerToken : null;
+}
+
 export function registerAuthRoutes(app) {
   app.get("/api/auth/session", (request, response) => {
-    const token = getSessionTokenFromCookieHeader(request.headers.cookie);
-    const user = getUserFromSessionToken(token);
+    const sessionToken = getRequestSessionToken(request);
+    const user = getUserFromSessionToken(sessionToken);
 
     response.json({
       ok: true,
       user,
+      sessionToken: user ? sessionToken : null,
     });
   });
 
@@ -26,6 +38,7 @@ export function registerAuthRoutes(app) {
       response.status(201).json({
         ok: true,
         user: result.user,
+        sessionToken: result.sessionToken,
       });
     } catch (error) {
       sendError(response, error);
@@ -39,6 +52,7 @@ export function registerAuthRoutes(app) {
       response.json({
         ok: true,
         user: result.user,
+        sessionToken: result.sessionToken,
       });
     } catch (error) {
       sendError(response, error);
@@ -46,7 +60,7 @@ export function registerAuthRoutes(app) {
   });
 
   app.post("/api/auth/logout", (request, response) => {
-    const token = getSessionTokenFromCookieHeader(request.headers.cookie);
+    const token = getRequestSessionToken(request);
     logout(token);
     response.setHeader("Set-Cookie", clearSessionCookie());
     response.json({ ok: true });

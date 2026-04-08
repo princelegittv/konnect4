@@ -1,9 +1,34 @@
+const SESSION_TOKEN_KEY = "konnect4_session_token";
 const API_URL = import.meta.env.VITE_SERVER_URL ?? (import.meta.env.DEV ? "http://localhost:3001" : "");
+
+export function getStoredSessionToken() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return window.localStorage.getItem(SESSION_TOKEN_KEY) ?? "";
+}
+
+export function setStoredSessionToken(token) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (token) {
+    window.localStorage.setItem(SESSION_TOKEN_KEY, token);
+    return;
+  }
+
+  window.localStorage.removeItem(SESSION_TOKEN_KEY);
+}
+
 async function request(path, options = {}) {
+  const sessionToken = getStoredSessionToken();
   const response = await fetch(`${API_URL}${path}`, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
       ...(options.headers ?? {}),
     },
     ...options,

@@ -15,7 +15,8 @@ import QueuePanel from "./components/home/QueuePanel";
 import RankedPanel from "./components/home/RankedPanel";
 import ProfileSection from "./components/profile/ProfileSection";
 import { useGameSoundEffects } from "./hooks/useGameSoundEffects";
-import { socket } from "./socket";
+import { getStoredSessionToken, setStoredSessionToken } from "./api";
+import { socket, syncSocketSessionToken } from "./socket";
 
 const guestFeedback = {
   type: "info",
@@ -141,6 +142,7 @@ export default function App() {
         resolve(false);
       }
 
+      syncSocketSessionToken();
       socket.on("connect", handleConnect);
       socket.on("connect_error", handleConnectError);
       socket.connect();
@@ -155,6 +157,7 @@ export default function App() {
 
   function reconnectSocket() {
     intentionalDisconnectRef.current = false;
+    syncSocketSessionToken();
     if (socket.connected) {
       socket.disconnect();
     }
@@ -237,6 +240,7 @@ export default function App() {
         }
 
         if (result.user) {
+          setStoredSessionToken(result.sessionToken ?? getStoredSessionToken());
           setSessionStatus("authenticated");
           await loadAuthenticatedData();
           if (cancelled) {
@@ -247,10 +251,12 @@ export default function App() {
             type: "success",
             message: `Welcome back, ${result.user.username}. Pick a Konnect4 mode to start playing.`,
           });
+          syncSocketSessionToken();
           socket.connect();
           return;
         }
 
+        setStoredSessionToken("");
         setSessionStatus("guest");
         setFeedback(guestFeedback);
       } catch (error) {
@@ -258,6 +264,7 @@ export default function App() {
           return;
         }
 
+        setStoredSessionToken("");
         setSessionStatus("guest");
         setFeedback({
           type: "error",
@@ -371,6 +378,7 @@ export default function App() {
 
     try {
       const result = authMode === "signup" ? await api.signup(payload) : await api.login(payload);
+      setStoredSessionToken(result.sessionToken ?? "");
       setSessionStatus("authenticated");
       await loadAuthenticatedData();
       resetHomeState();
@@ -399,6 +407,7 @@ export default function App() {
       // Clearing the local session state is enough for logout UX.
     } finally {
       disconnectSocket();
+      setStoredSessionToken("");
       setUser(null);
       setProfileData(null);
       setNotifications([]);
