@@ -7,7 +7,7 @@ function getSessionCookieOptions() {
     maxAge: Math.floor(SESSION_TTL_MS / 1000),
     path: "/",
     httpOnly: true,
-    sameSite: "Lax",
+    sameSite: isProduction ? "None" : "Lax",
     secure: isProduction,
   };
 }
