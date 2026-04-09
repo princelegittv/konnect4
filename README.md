@@ -193,6 +193,40 @@ Before sharing the game publicly, verify:
 
 The current backend stores data in SQLite on the backend service disk. That is fine for an MVP, but for a more durable production setup you should eventually move to a managed database such as Postgres.
 
+## App Readiness
+
+Konnect4 now includes the web-app foundations needed to behave more like an installable mobile app:
+
+- web app manifest
+- theme color and mobile app meta tags
+- installable app prompt support
+- service worker registration for basic app-shell caching
+- app icons for browser and install surfaces
+
+Files involved:
+
+- [client/index.html](./client/index.html)
+- [client/public/manifest.webmanifest](./client/public/manifest.webmanifest)
+- [client/public/sw.js](./client/public/sw.js)
+- [client/public/icons/icon.svg](./client/public/icons/icon.svg)
+- [client/public/icons/icon-maskable.svg](./client/public/icons/icon-maskable.svg)
+
+Important:
+
+- A PWA alone is not usually enough for direct Google Play publishing.
+- The usual next step is packaging the live site with either a Trusted Web Activity or Capacitor.
+- For the Play Store, you will also want:
+  - a real privacy policy URL
+  - polished 512x512 PNG app icon assets
+  - splash assets
+  - Android package metadata
+  - store listing text and screenshots
+
+Recommended next packaging options:
+
+- Trusted Web Activity if you want the Play Store app to load the hosted Konnect4 website directly
+- Capacitor if you want a native Android wrapper project inside this repo
+
 ## How It Works
 
 - The backend exposes REST auth endpoints under `/api/auth/*`.

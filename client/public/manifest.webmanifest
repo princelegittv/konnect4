@@ -1,0 +1,43 @@
+{
+  "name": "Konnect4",
+  "short_name": "Konnect4",
+  "description": "Competitive online Connect 4 with ranked matches, friends, live spectating, and PrinceLegitTV AI practice.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B1220",
+  "theme_color": "#0B1220",
+  "categories": ["games", "entertainment", "social"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Private Match",
+      "short_name": "Private",
+      "url": "/?section=play"
+    },
+    {
+      "name": "Ranked Match",
+      "short_name": "Ranked",
+      "url": "/?section=ranked"
+    },
+    {
+      "name": "Practice",
+      "short_name": "Practice",
+      "url": "/?section=practice"
+    }
+  ]
+}

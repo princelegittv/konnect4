@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import AuthPanel from "./components/auth/AuthPanel";
+import AppInstallBanner from "./components/AppInstallBanner";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import LobbyForm from "./components/LobbyForm";
 import RoomScreen from "./components/RoomScreen";
@@ -779,6 +780,7 @@ export default function App() {
       </section>
 
       <NavigationMenu activeItem={selectedMenu} onSelect={setSelectedMenu} />
+      <AppInstallBanner />
 
       <section className="home-main">
         {selectedMenu === "play" ? (

@@ -95,6 +95,36 @@ img {
   z-index: 1001;
 }
 
+.install-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(250, 204, 21, 0.18);
+  background:
+    linear-gradient(180deg, rgba(250, 204, 21, 0.1), rgba(255, 255, 255, 0.02)),
+    rgba(17, 24, 39, 0.86);
+  box-shadow: var(--gold-glow);
+}
+
+.install-banner-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.install-banner-copy p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.install-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .cookie-banner-copy {
   display: grid;
   gap: 6px;
@@ -1745,6 +1775,15 @@ img {
     transform: none;
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .install-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .install-banner-actions {
+    width: 100%;
   }
 
   .auth-card,
