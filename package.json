@@ -14,11 +14,17 @@
     "dev": "concurrently \"npm run dev --workspace server\" \"npm run dev --workspace client\"",
     "dev:server": "npm run dev --workspace server",
     "dev:client": "npm run dev --workspace client",
-    "test": "node --input-type=module -e \"process.env.NODE_ENV='test'; await import('./shared/connect4.test.js')\" && node --input-type=module -e \"process.env.NODE_ENV='test'; await import('./server/src/notificationsRepository.test.js')\" && node --input-type=module -e \"process.env.NODE_ENV='test'; await import('./server/src/roomManager.test.js')\"",
+    "test": "npm run test:unit",
+    "test:unit": "node --input-type=module -e \"process.env.NODE_ENV='test'; await import('./shared/connect4.test.js')\" && node --input-type=module -e \"process.env.NODE_ENV='test'; await import('./server/src/notificationsRepository.test.js')\" && node --input-type=module -e \"process.env.NODE_ENV='test'; await import('./server/src/roomManager.test.js')\"",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:install": "playwright install chromium",
+    "test:all": "npm run test:unit && npm run test:e2e",
     "build": "npm run build --workspace client",
     "start": "npm run start --workspace server"
   },
   "devDependencies": {
+    "@playwright/test": "^1.52.0",
     "concurrently": "^9.1.2"
   }
 }

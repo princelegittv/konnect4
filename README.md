@@ -51,6 +51,11 @@ konnect4/
 ## Available Scripts
 
 - `npm test` runs the shared game tests and room manager tests
+- `npm run test:unit` runs the shared and backend unit tests
+- `npm run test:e2e` runs the free Playwright browser tests
+- `npm run test:e2e:headed` runs the browser tests with a visible browser window
+- `npm run test:e2e:install` installs the Playwright Chromium browser locally
+- `npm run test:all` runs unit tests and browser tests together
 - `npm run dev` starts the frontend and backend together
 - `npm run dev:client` starts only the React app
 - `npm run dev:server` starts only the Node.js server
@@ -234,3 +239,49 @@ Recommended next packaging options:
 - The shared `shared/connect4.js` module contains the core game rules.
 - The Socket.IO layer handles private rooms, matchmaking queueing, AI practice, rematches, and disconnect cleanup.
 - Every move is validated on the server before room state is broadcast to clients.
+
+## Free Testing Setup
+
+Konnect4 now includes a free automated browser test setup using Playwright.
+
+Included files:
+
+- [playwright.config.js](./playwright.config.js)
+- [e2e/konnect4.spec.js](./e2e/konnect4.spec.js)
+- [scripts/reset-test-db.mjs](./scripts/reset-test-db.mjs)
+- [.github/workflows/tests.yml](./.github/workflows/tests.yml)
+
+What it tests right now:
+
+- sign up flow
+- cookie acceptance flow
+- private room create and join flow
+- random matchmaking flow
+
+How to run it locally:
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Install the free Playwright browser:
+
+   ```bash
+   npm run test:e2e:install
+   ```
+
+3. Run the end-to-end tests:
+
+   ```bash
+   npm run test:e2e
+   ```
+
+4. If you want to watch the browser while tests run:
+
+   ```bash
+   npm run test:e2e:headed
+   ```
+
+GitHub Actions will also run the unit tests and Playwright tests for free on pushes and pull requests.
